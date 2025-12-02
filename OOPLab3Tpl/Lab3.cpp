@@ -216,7 +216,211 @@ int main1() {
 
 // _________________________________ Task 2 ______________________________
 
-int main2() {}
+class Matrix {
+private:
+    int *data;
+    int rows;
+    int cols;
+    bool error;
+    static int count;
+
+    int index(int i, int j) const {
+        return i * cols + j;
+    }
+
+public:
+    Matrix() : rows(3), cols(3), error(false) {
+        count++;
+        data = nullptr;
+        try {
+            data = new int[rows * cols]();
+        } catch (const bad_alloc&) {
+            error = true;
+        }
+    }
+
+    Matrix(int n) : rows(n), cols(n), error(false) {
+        count++;
+        data = nullptr;
+        try {
+            data = new int[rows * cols]();
+        } catch (const bad_alloc&) {
+            error = true;
+        }
+    }
+
+    Matrix(int n, int m, int value) : rows(n), cols(m), error(false) {
+        count++;
+        data = nullptr;
+        try {
+            data = new int[rows * cols];
+            for (int i = 0; i < rows * cols; i++) {
+                data[i] = value;
+            }
+        } catch (const bad_alloc&) {
+            error = true;
+        }
+    }
+
+    Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), error(other.error) {
+        count++;
+        data = nullptr;
+        if (other.data) {
+            try {
+                data = new int[rows * cols];
+                for (int i = 0; i < rows * cols; i++) {
+                    data[i] = other.data[i];
+                }
+            } catch (const bad_alloc&) {
+                error = true;
+            }
+        }
+    }
+
+    Matrix& operator=(const Matrix& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        delete[] data;
+
+        rows = other.rows;
+        cols = other.cols;
+        error = other.error;
+
+        data = nullptr;
+        if (other.data) {
+            try {
+                data = new int[rows * cols];
+                for (int i = 0; i < rows * cols; i++) {
+                    data[i] = other.data[i];
+                }
+            } catch (const bad_alloc&) {
+                error = true;
+            }
+        }
+
+        return *this;
+    }
+
+    ~Matrix() {
+        delete[] data;
+        count--;
+    }
+
+    void set(int i, int j, int value = 0) {
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            error = true;
+            return;
+        }
+        data[index(i, j)] = value;
+    }
+
+    int get(int i, int j) const {
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            throw out_of_range("Matrix indices out of range");
+        }
+        return data[index(i, j)];
+    }
+
+    void print() const {
+        if (error) {
+            cout << "Matrix in error state\n";
+            return;
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                cout << data[index(i, j)] << " ";
+            }
+            cout << "\n";
+        }
+    }
+
+    Matrix operator+(const Matrix& other) const {
+        if (rows != other.rows || cols != other.cols) {
+            throw invalid_argument("Matrices must have same dimensions for addition");
+        }
+        Matrix result(rows, cols, 0);
+        for (int i = 0; i < rows * cols; i++) {
+            result.data[i] = data[i] + other.data[i];
+        }
+        return result;
+    }
+
+    Matrix operator-(const Matrix& other) const {
+        if (rows != other.rows || cols != other.cols) {
+            throw invalid_argument("Matrices must have same dimensions for subtraction");
+        }
+        Matrix result(rows, cols, 0);
+        for (int i = 0; i < rows * cols; i++) {
+            result.data[i] = data[i] - other.data[i];
+        }
+        return result;
+    }
+
+    Matrix operator*(const Matrix& other) const {
+        if (cols != other.rows) {
+            throw invalid_argument("Matrices dimensions mismatch for multiplication");
+        }
+        Matrix result(rows, other.cols, 0);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < other.cols; j++) {
+                int sum = 0;
+                for (int k = 0; k < cols; k++) {
+                    sum += get(i, k) * other.get(k, j);
+                }
+                result.set(i, j, sum);
+            }
+        }
+        return result;
+    }
+
+    bool operator==(const Matrix& other) const {
+        if (rows != other.rows || cols != other.cols) return false;
+        for (int i = 0; i < rows * cols; i++) {
+            if (data[i] != other.data[i]) return false;
+        }
+        return true;
+    }
+
+    bool operator<(const Matrix& other) const {
+        int sum1 = 0, sum2 = 0;
+        for (int i = 0; i < rows * cols; i++) sum1 += data[i];
+        for (int i = 0; i < other.rows * other.cols; i++) sum2 += other.data[i];
+        return sum1 < sum2;
+    }
+
+    bool operator>(const Matrix& other) const {
+        return other < *this;
+    }
+
+    static int getCount() {
+        return count;
+    }
+};
+
+int Matrix::count = 0;
+
+int main2() {
+    Matrix A;
+    Matrix B(4);
+    Matrix C(2, 3, 5);
+
+    A.set(1, 1, 10);
+    cout << "A:\n"; A.print();
+
+    cout << "C:\n"; C.print();
+
+    Matrix D = C;
+    cout << "D (копія C):\n"; D.print();
+
+    Matrix E = C + D;
+    cout << "E = C + D:\n"; E.print();
+
+    cout << "Кількість об’єктів Matrix: " << Matrix::getCount() << "\n";
+
+    return 0;
+}
 
 // _________________________________ Task 3 ______________________________
 
