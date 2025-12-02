@@ -3,8 +3,107 @@
 #include <cassert>
 using namespace std;
 
-
 // _________________________________ Task 1 ______________________________
+
+class Parallelogram {
+private:
+    double base;
+    double height;
+    double side;
+    string color;
+
+public:
+    Parallelogram() : base(1), height(1), side(1), color("white") {}
+
+    Parallelogram(double base, double height, double side, const string& color) {
+        setBase(base);
+        setHeight(height);
+        setSide(side);
+        setColor(color);
+    }
+
+    double area() const {
+        return base * height;
+    }
+
+    double perimeter() const {
+        return 2 * (base + side);
+    }
+
+    void setBase(double newBase) {
+        if (newBase <= 0) {
+            throw invalid_argument("Основа повинна бути більшою за нуль!");
+        }
+        base = newBase;
+    }
+
+    void setHeight(double newHeight) {
+        if (newHeight <= 0) {
+            throw invalid_argument("Висота повинна бути більшою за нуль!");
+        }
+        height = newHeight;
+    }
+
+    void setSide(double newSide) {
+        if (newSide <= 0) {
+            throw invalid_argument("Бічна сторона повинна бути більшою за нуль!");
+        }
+        side = newSide;
+    }
+
+    void setColor(const string& newColor) {
+        color = newColor;
+    }
+
+    double getBase() const {
+        return base;
+    }
+
+    double getHeight() const {
+        return height;
+    }
+
+    double getSide() const {
+        return side;
+    }
+
+    string getColor() const {
+        return color;
+    }
+
+    void print() const {
+        cout << "Паралелограм: " << endl;
+        cout << "Основа: " << base << endl;
+        cout << "Висота: " << height << endl;
+        cout << "Бічна сторона: " << side << endl;
+        cout << "Колір: " << color << endl;
+        cout << "Площа: " << area() << endl;
+        cout << "Периметр: " << perimeter() << endl;
+    }
+};
+
+
+int main1() {
+    try {
+        Parallelogram p(5, 3, 4, "blue");
+
+        p.print();
+
+        p.setBase(7);
+        p.setHeight(4);
+        p.setSide(6);
+        p.setColor("red");
+
+        cout << "\nОновлені дані:\n";
+        p.print();
+    } catch (const invalid_argument& e) {
+        cerr << "Помилка: " << e.what() << endl;
+    }
+
+    return 0;
+}
+
+// _________________________________ Task 2 ______________________________
 
 class Vector {
 private:
@@ -180,7 +279,7 @@ public:
 
 size_t Vector::object_count = 0;
 
-int main1() {
+int main2() {
     Vector v1;
     Vector v2(3);
     Vector v3(4, 5);
@@ -214,7 +313,7 @@ int main1() {
     return 0;
 }
 
-// _________________________________ Task 2 ______________________________
+// _________________________________ Task 3 ______________________________
 
 class Matrix {
 private:
@@ -401,7 +500,7 @@ public:
 
 int Matrix::count = 0;
 
-int main2() {
+int main3() {
     Matrix A;
     Matrix B(4);
     Matrix C(2, 3, 5);
@@ -421,7 +520,3 @@ int main2() {
 
     return 0;
 }
-
-// _________________________________ Task 3 ______________________________
-
-int main3() {}
